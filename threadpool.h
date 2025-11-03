@@ -8,6 +8,8 @@
 #include <mutex>
 #include <condition_variable>
 
+const int DEFAULT_THREAD_NUM = 4;
+
 // 线程池的模式
 enum class PoolMode {
     FIXED_MODE,         // 固定数量的线程
@@ -40,11 +42,10 @@ public:
     ThreadPool(const ThreadPool &) = delete;
     ThreadPool &operator=(const ThreadPool &) = delete;
     // 启动线程池
-    void start();
+    void start(size_t initThreadSize = DEFAULT_THREAD_NUM);
     // 设置线程池工作模式
-    void setPoolMode();
-    // 设置初始的线程数量
-    void setInitThreadNum();
+    void setPoolMode(PoolMode mode);
+
     // 设置任务队列的上限阈值
     void setTaskQueMaxThreshold(int threshold);
     // 向线程池提交任务
