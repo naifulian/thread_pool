@@ -25,6 +25,15 @@ public:
 private:
 };
 
+class Thread {
+public:
+    Thread();
+    ~Thread();
+    void start();
+
+private:
+};
+
 // fixed 模式不需要考虑线程安全，因为线程池对象初始化直接创建好了线程
 // cached 模式需要考虑线程安全，线程回收可能要在不同的线程对线程队列删除
 
@@ -63,12 +72,6 @@ private:
     std::condition_variable m_notEmpty;                 // 表示任务队列不空，
 
     PoolMode m_poolMode;                                // 当前线程池的工作模式
-};
-
-class Thread {
-public:
-
-private:
 };
 
 #endif 
