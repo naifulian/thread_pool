@@ -6,6 +6,8 @@
 #include <memory>
 #include <atomic>
 #include <mutex>
+#include <functional>
+#include <thread>
 #include <condition_variable>
 
 const int DEFAULT_THREAD_NUM = 4;
@@ -25,13 +27,20 @@ public:
 private:
 };
 
+// 线程类的封装，提供更加友好的线程管理接口
 class Thread {
 public:
-    Thread();
-    ~Thread();
-    void start();
+    // 可以绑定任何可调用对象，使用绑定器绑定了 this 指针
+    using ThreadFunc = std::function<void()>;
 
+    Thread(ThreadFunc func);
+    ~Thread();
+    
+    // 启动单个线程，并设置线程为 detach 模式
+    void start();
 private:
+    // 线程要执行的函数
+    ThreadFunc m_func;
 };
 
 // fixed 模式不需要考虑线程安全，因为线程池对象初始化直接创建好了线程
@@ -45,6 +54,8 @@ private:
 // 线程池不需要拷贝构造和赋值 -> why：包含不可拷贝资源
 
 // 在 ThreadPool 中添加 threadHandler(OOP) 和 Thread 中添加 start(不能访问任务队列中的锁)，全局函数这三种方案的对比
+
+// 创建线程时使用 std::bind 绑定参数， std::function 
 class ThreadPool {
 public:
     ThreadPool();
@@ -52,7 +63,7 @@ public:
 
     ThreadPool(const ThreadPool &) = delete;
     ThreadPool &operator=(const ThreadPool &) = delete;
-    // 启动线程池
+    // 启动线程池中的所有线程
     void start(size_t initThreadSize = DEFAULT_THREAD_NUM);
     // 设置线程池工作模式
     void setPoolMode(PoolMode mode);
