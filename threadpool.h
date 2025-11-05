@@ -49,6 +49,8 @@ private:
 // 对于任务队列，需要使用多态，所以使用指针，为了保证任务队列的生命周期
 // (考虑用户提交任务是否传进来一个临时对象)，需要使用智能指针
 
+// 使用智能指针管理线程列表
+
 // 记录任务个数的成员变量需要考虑线程安全问题，使用原子类型就行了 => 为什么需要单独一个变量记录任务数量?
 
 // 线程池不需要拷贝构造和赋值 -> why：包含不可拷贝资源
@@ -77,7 +79,7 @@ private:
     void threadFunc();
 
 private:
-    std::vector<Thread*> m_threads;                      // 线程列表
+    std::vector<std::unique_ptr<Thread>> m_threads;     // 线程列表
     size_t m_initThreadSize;                            // 初始的线程数量
 
     std::queue<std::shared_ptr<Task>> m_taskQue;        // 任务队列

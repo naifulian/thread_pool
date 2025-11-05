@@ -29,7 +29,7 @@ void ThreadPool::setTaskQueMaxThreshold(int threshold) {
     m_taskQueMaxThreshold = threshold;
 }
 
-// 向线程池提交任务
+// 向线程池提交任务，用户调用该接口传入一个可调用对象作为任务
 void ThreadPool::submitTask(std::shared_ptr<Task> sp) {
 
 }
@@ -46,7 +46,8 @@ void ThreadPool::start(size_t initThreadSize) {
     // 集中创建所有线程对象
     for(int i = 0; i < m_initThreadSize; ++i) {
         // 创建 thread 线程对象时，把线程函数给 thread 线程对象
-        m_threads.emplace_back(new Thread(std::bind(&ThreadPool::threadFunc, this)));
+        auto ptr = std::make_unique<Thread>(std::bind(&ThreadPool::threadFunc, this));
+        m_threads.emplace_back(ptr);
     }
 
     // 启动所有线程
@@ -55,7 +56,7 @@ void ThreadPool::start(size_t initThreadSize) {
     }
 }
 
-// 线程池的线程函数，线程池的线程执行在线程池中定义的线程函数
+// 线程池的线程函数，从任务队列中消费任务
 void ThreadPool::threadFunc() {
     std::cout << "Begin threadFunc, tid = " << std::this_thread::get_id() << std::endl;
 
