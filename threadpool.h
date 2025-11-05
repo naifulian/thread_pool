@@ -43,6 +43,8 @@ private:
 // 记录任务个数的成员变量需要考虑线程安全问题，使用原子类型就行了 => 为什么需要单独一个变量记录任务数量?
 
 // 线程池不需要拷贝构造和赋值 -> why：包含不可拷贝资源
+
+// 在 ThreadPool 中添加 threadHandler(OOP) 和 Thread 中添加 start(不能访问任务队列中的锁)，全局函数这三种方案的对比
 class ThreadPool {
 public:
     ThreadPool();
@@ -60,7 +62,11 @@ public:
     // 向线程池提交任务
     void submitTask(std::shared_ptr<Task> sp);
 private:
-    std::vector<Thread*> m_thread;                      // 线程列表
+    // 定义线程函数
+    void threadFunc();
+
+private:
+    std::vector<Thread*> m_threads;                      // 线程列表
     size_t m_initThreadSize;                            // 初始的线程数量
 
     std::queue<std::shared_ptr<Task>> m_taskQue;        // 任务队列
