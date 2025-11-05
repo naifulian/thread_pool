@@ -58,6 +58,8 @@ private:
 // 在 ThreadPool 中添加 threadHandler(OOP) 和 Thread 中添加 start(不能访问任务队列中的锁)，全局函数这三种方案的对比
 
 // 创建线程时使用 std::bind 绑定参数， std::function 
+
+// 为什么需要原子类型的 m_taskNum 变量？
 class ThreadPool {
 public:
     ThreadPool();
