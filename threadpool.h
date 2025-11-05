@@ -68,7 +68,7 @@ public:
     ThreadPool(const ThreadPool &) = delete;
     ThreadPool &operator=(const ThreadPool &) = delete;
     // 启动线程池中的所有线程
-    void start(size_t initThreadSize = DEFAULT_THREAD_NUM);
+    void start(int initThreadSize = DEFAULT_THREAD_NUM);
     // 设置线程池工作模式
     void setPoolMode(PoolMode mode);
 
