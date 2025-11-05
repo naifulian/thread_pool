@@ -46,8 +46,7 @@ void ThreadPool::start(size_t initThreadSize) {
     // 集中创建所有线程对象
     for(int i = 0; i < m_initThreadSize; ++i) {
         // 创建 thread 线程对象时，把线程函数给 thread 线程对象
-        auto ptr = std::make_unique<Thread>(std::bind(&ThreadPool::threadFunc, this));
-        m_threads.emplace_back(ptr);
+        m_threads.emplace_back(std::make_unique<Thread>(std::bind(&ThreadPool::threadFunc, this)));
     }
 
     // 启动所有线程
