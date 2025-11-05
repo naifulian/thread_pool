@@ -4,7 +4,7 @@
 #include "threadpool.h"
 
 /*=============================ThreadPool 实现==================*/
-const int TASK_MAX_THRESHOLD = 1024;
+const int TASK_MAX_THRESHOLD = 1024;                // 任务队列的最大阈值
 
 ThreadPool::ThreadPool()
     : m_initThreadSize(0), m_taskNum(0)
@@ -31,7 +31,20 @@ void ThreadPool::setTaskQueMaxThreshold(int threshold) {
 
 // 向线程池提交任务，用户调用该接口传入一个可调用对象作为任务
 void ThreadPool::submitTask(std::shared_ptr<Task> sp) {
+    // 1.获取任务队列的锁
+    std::unique_lock<std::mutex> lock(m_mtx_taskQue);
+    // 2.等待任务队列有空余，最长时间不能超过 1s，否则判断此次提交任务失败
+    /*while(m_taskQue.size() == m_taskQueMaxThreshold) {
+        m_notFull.wait(lock);
+    }*/
+    m_notFull.wait(lock, [&]()->bool {
+        return m_taskQue.size() < m_taskQueMaxThreshold;});
 
+    // 3.任务队列有空余，将任务放入任务队列中
+    m_taskQue.emplace(sp);
+    m_taskNum++;
+    // 4. 提交新任务，在 notEmpty 信号量通知分配线程处理任务
+    m_notEmpty.notify_all();
 }
 
  // 启动线程池
